@@ -12,14 +12,20 @@ function send(status, msg, content) {
 	}
 }
 
-exports.signIn = async function (ctx, next) {
-    console.log(ctx);
-	var id = ctx.query.id;
-	var pwd = ctx.query.pwd;
-	if (!id || !pwd) {
-		return ctx.body = send(400, '缺少参数');
+function lean(ref){
+   // delete ref._id;
+    delete ref.pwd;
+	delete ref.__v;
+    return ref;
+}
+
+exports.signIn = function * (next) {
+	var email = this.request.body.email;
+	var pwd = this.request.body.pwd;
+	if (!email || !pwd) {
+		return this.body = send(400, '缺少参数');
 	}
-	var user = await User.findById(id);
+	var user = yield User.findById(email).lean().exec();
 	if (!user) {
 		return this.body = send(404, '无此记录');
 	}
@@ -27,15 +33,12 @@ exports.signIn = async function (ctx, next) {
 	if (pwd !== user.pwd) {
 		return this.body = send(401, '密码错误');
 	}
-
-	delete user.rdate;
-	delete user.password;
-	delete user.__v;
+    
+    user = lean(user);
 
 	user.token = jwt.sign(user, skey, {
-		expiresInMinutes: 1440
+		expiresIn: 1440*60
 	});
-
 
 	return this.body = send(1, 'success', user);
 
@@ -43,13 +46,10 @@ exports.signIn = async function (ctx, next) {
 
 
 
-exports.signUp = async function (ctx, next) {
-    var User = require('../model/index.js').User;
-    console.log(ctx);
-    debugger;
-	email = ctx.query.email;
-	pwd = ctx.query.pwd;
-	stuid = ctx.query.stuid;
+exports.signUp = function* (next) {
+	email = this.request.body.email;
+	pwd = this.request.body.pwd;
+	stuid = this.request.body.stuid;
 	// nickname = this.request.body.nickname,
 	// phone = this.request.body.phone,
 	// epwd = this.request.body.epwd,
@@ -74,13 +74,13 @@ exports.signUp = async function (ctx, next) {
 		return this.body = send(400, '参数不合法');
 	}
 
-	var stu = await Stu.findById(stuid).populate('clazz').exec();
+	var stu = yield Stu.findById(stuid).populate('clazz').exec();
 	if (!stu) {
 		return this.body = send(401, '无此学号');
 	}
 
 	var user = new User({
-		email: email,
+		_id: email,
 		stuid: stuid,
 		pwd: pwd,
 		//nickname: nickname,
@@ -92,17 +92,16 @@ exports.signUp = async function (ctx, next) {
 	console.log(user);
 
 	try {
-		await user.save();
+		yield user.save();
 	} catch (e) {
 		console.log(e);
 		return this.body = send(400, e);
 	}
 
 	user = user.toObject();
-    delete user.pwd;
 
 	user.token = jwt.sign(user, skey, {
-		expiresInMinutes: 1440 // expires in 24 hours
+		expiresIn: 1440*60 // expires in 24 hours
 	});
 
 	return this.body = send(1, 'success', user);

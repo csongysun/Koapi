@@ -18,7 +18,7 @@ var ClazzSchema = new Schema({
 	_id: {type: String},
 	name: {type: String},
 	depart: {type: String},
-	course: {type: Schema.Types.Mixed, default: []}
+	course: {type: String, default: null}
 });
 
 if (!CourseSchema.options.toObject) CourseSchema.options.toObject = {};
