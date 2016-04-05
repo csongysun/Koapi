@@ -91,7 +91,7 @@ exports.signUp = function* (next) {
 
 	console.log(user);
 
-	try {
+	try { 
 		yield user.save();
 	} catch (e) {
 		console.log(e);
