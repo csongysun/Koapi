@@ -18,5 +18,4 @@ StuSchema.options.toObject.transform = function (doc, ret, options) {
 
 
 StuSchema.index({_id: 1}, {unique: true});
-
 mongoose.model('Stu', StuSchema);

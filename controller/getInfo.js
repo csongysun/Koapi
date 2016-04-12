@@ -26,7 +26,7 @@ exports.getStu = function * (next) {
 		return this.body = send(404, '无此记录');
 	}
 
-	console.log(JSON.stringify(stu.toObject(), null, '\t'));
+	//console.log(JSON.stringify(stu.toObject(), null, '\t'));
 
 	return this.body = send(1, '查询成功', stu.toObject());
 
@@ -51,7 +51,7 @@ exports.getSxw = function * (next) {
 
 exports.getScore = function * (next) {
 	var stuid = this.request.query.sid;
-	var term = this.request.query.term||'2014.2';
+	var term = this.request.query.term||'2015.2';
 	if (!stuid) {
 		return this.body = send(400, '缺少参数');
 	}
@@ -201,6 +201,32 @@ function getLibInfo(sid) {
 					items.push(x);
 				}
 				resolve(items);
+			});
+	});
+}
+
+exports.getEcard = function * (next) {
+	var sid = this.request.query.sid;
+    var epwd = this.request.query.epwd;
+	if (!sid || !epwd) {
+		return this.body = send(400, '缺少参数');
+	}
+
+	var data = yield getEcardInfo(sid,epwd);
+    data = JSON.parse(data);
+	if (data)
+		this.body = send(1, 'success', data);
+	else this.body = send(404, 'error', data);
+}
+
+function getEcardInfo(sid,epwd) {
+	return new Promise(function(resolve, reject) {
+		superagent
+			.get('http://api.ecjtu.org/func/jwc/ecard_info?'+'student_id='+sid+'&e_password='+epwd)
+			.end(function(err, res) {
+				var data = res.text;
+				
+				resolve(data);
 			});
 	});
 }
