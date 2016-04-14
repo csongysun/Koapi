@@ -46,13 +46,13 @@ exports.signIn = function * (next) {
 
 
 
-exports.signUp = function* (next) {
+exports.signUp = function * (next) {
 	email = this.request.body.email;
 	pwd = this.request.body.pwd;
 	stuid = this.request.body.stuid;
 	// nickname = this.request.body.nickname,
 	// phone = this.request.body.phone,
-	// epwd = this.request.body.epwd,
+	epwd = this.request.body.epwd;
 	// sex = this.request.body.sex
 
 	// if (!_id || !pwd || !stuid || !nickname) {
@@ -85,7 +85,7 @@ exports.signUp = function* (next) {
 		pwd: pwd,
 		//nickname: nickname,
 		//phone: phone,
-		//epwd: epwd,
+		epwd: epwd,
 		//sex: sex
 	});
 

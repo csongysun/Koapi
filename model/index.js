@@ -13,8 +13,10 @@ mongoose.connect(config.db, config.options, function (err) {
 require('./clazzinfo');
 require('./stuinfo');
 require('./user')
+require('./mapitem')
 
 //exports.User         = mongoose.model('User');
 exports.Clazz        = mongoose.model('Clazz');
 exports.Stu 		 = mongoose.model('Stu');
 exports.User 		 = mongoose.model('User');
+exports.MapItem 		 = mongoose.model('MapItem');

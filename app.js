@@ -15,6 +15,7 @@ var signIn = require('./controller/sign').signIn;
 var signUp = require('./controller/sign').signUp;
 var getScore = require('./controller/getInfo').getScore;
 var getEcard = require('./controller/getInfo').getEcard;
+var getMap = require('./controller/getdata').getMap;
 
 var jwt    = require('jsonwebtoken');
 
@@ -28,7 +29,8 @@ router.get('/', function* (next){
 .post('/signin', koabody, signIn) 
 .get('/stu', getStu)
 .get('/score',getScore)
-.get('/getecard', getEcard);
+.get('/getecard', getEcard)
+.get('/getmap', getMap);
 // .get('/sxw', getSxw)
 // .get('/lib', getLib)
 // .get('*', function* (){

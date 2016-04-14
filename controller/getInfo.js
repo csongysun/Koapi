@@ -13,7 +13,7 @@ function send(status, msg, content) {
 
 exports.getStu = function * (next) {
 	//var res = {};
-	var stuid = this.request.query.sid;
+	var stuid = this.request.query.stuid;
 	if (!stuid) {
 		return this.body = send(400, '缺少参数');
 		// res.status = 400;
@@ -50,8 +50,8 @@ exports.getSxw = function * (next) {
 }
 
 exports.getScore = function * (next) {
-	var stuid = this.request.query.sid;
-	var term = this.request.query.term||'2015.2';
+	var stuid = this.request.query.stuid;
+	var term = this.request.query.term||'2015.1';
 	if (!stuid) {
 		return this.body = send(400, '缺少参数');
 	}
@@ -206,7 +206,7 @@ function getLibInfo(sid) {
 }
 
 exports.getEcard = function * (next) {
-	var sid = this.request.query.sid;
+	var sid = this.request.query.stuid;
     var epwd = this.request.query.epwd;
 	if (!sid || !epwd) {
 		return this.body = send(400, '缺少参数');

@@ -5,14 +5,8 @@ var ObjectId = Schema.ObjectId;
 var UserSchema = new Schema({
 	_id: {type: String},    //email
 	stuid: {type: String, ref: 'Stu'},
-	//ban: {type: Boolean, default: false},
 	pwd: {type: String},
-	//nickname: {type: String},
-	//phone: {type: String},
-	//ecard: {type: String},
-	//epwd: {type: String},
-	//sex: {type: Number},
-	//rdate: {type: Date, default: Date.now}
+	epwd: {type: String}
 });
 
 if (!UserSchema.options.toObject) UserSchema.options.toObject = {};
