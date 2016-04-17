@@ -3,7 +3,7 @@ var Schema = mongoose.Schema;
 var ObjectId = Schema.ObjectId;
 
 var UserSchema = new Schema({
-	_id: {type: String},    //email
+	_id: {type: String, index: true},    //email
 	stuid: {type: String, ref: 'Stu'},
 	pwd: {type: String},
 	epwd: {type: String}
@@ -17,6 +17,6 @@ UserSchema.options.toObject.transform = function (doc, ret, options) {
 }
 
 
-UserSchema.index({_id: 1}, {unique: true});
+//UserSchema.index({_id: 1}, {unique: true});
 
 mongoose.model('User', UserSchema);

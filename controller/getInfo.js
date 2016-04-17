@@ -159,7 +159,7 @@ function getSxwInfo(param) {
 }
 
 exports.getLib = function * (next) {
-	var sid = this.request.query.sid;
+	var sid = this.request.query.stuid;
 	if (!sid) {
 		return this.body = send(400, '缺少参数');
 	}

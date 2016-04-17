@@ -50,14 +50,8 @@ exports.signUp = function * (next) {
 	email = this.request.body.email;
 	pwd = this.request.body.pwd;
 	stuid = this.request.body.stuid;
-	// nickname = this.request.body.nickname,
-	// phone = this.request.body.phone,
 	epwd = this.request.body.epwd;
-	// sex = this.request.body.sex
 
-	// if (!_id || !pwd || !stuid || !nickname) {
-	// 	return this.body = send(400, '缺少参数');
-	// }
     if (!email || !pwd || !stuid) {
 		return this.body = send(400, '缺少参数');
 	}
@@ -74,7 +68,7 @@ exports.signUp = function * (next) {
 		return this.body = send(400, '参数不合法');
 	}
 
-	var stu = yield Stu.findById(stuid).populate('clazz').exec();
+	var stu = yield Stu.findById(stuid);
 	if (!stu) {
 		return this.body = send(401, '无此学号');
 	}
@@ -83,10 +77,7 @@ exports.signUp = function * (next) {
 		_id: email,
 		stuid: stuid,
 		pwd: pwd,
-		//nickname: nickname,
-		//phone: phone,
 		epwd: epwd,
-		//sex: sex
 	});
 
 	console.log(user);
@@ -98,11 +89,5 @@ exports.signUp = function * (next) {
 		return this.body = send(400, e);
 	}
 
-	user = user.toObject();
-
-	user.token = jwt.sign(user, skey, {
-		expiresIn: 1440*60 // expires in 24 hours
-	});
-
-	return this.body = send(1, 'success', user);
+	return this.body = send(1, 'success');
 }
