@@ -64,7 +64,7 @@ exports.signUp = function * (next) {
 	// if (!validator.isEmail(_id) || !validator.isPwd(pwd) || validator.isWeird(nickname) || !validator.isStuid(stuid)) {
 	// 	return this.body = send(400, '参数不合法');
 	// }
-    	if (!validator.isEmail(email) || !validator.isPwd(pwd) || !validator.isStuid(stuid)) {
+    	if (!validator.isEmail(email) || !validator.isStuid(stuid)) {
 		return this.body = send(400, '参数不合法');
 	}
 
