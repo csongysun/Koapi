@@ -9,13 +9,14 @@ var config = require('./config');
 const app = new koa();
 
 var getStu = require('./controller/getInfo').getStu;
-//var getSxw = require('./controller/getInfo').getSxw;
-//var getLib = require('./controller/getInfo').getLib
+var getSxw = require('./controller/getInfo').getSxw;
+var getLib = require('./controller/getInfo').getLib;
 var signIn = require('./controller/sign').signIn;
 var signUp = require('./controller/sign').signUp;
 var getScore = require('./controller/getInfo').getScore;
 var getEcard = require('./controller/getInfo').getEcard;
 var getMap = require('./controller/getdata').getMap;
+var getExam = require('./controller/getInfo').getExam;
 
 var jwt    = require('jsonwebtoken');
 
@@ -30,9 +31,10 @@ router.get('/', function* (next){
 .get('/stu', getStu)
 .get('/score',getScore)
 .get('/getecard', getEcard)
-.get('/getmap', getMap);
-// .get('/sxw', getSxw)
-// .get('/lib', getLib)
+.get('/getmap', getMap)
+.get('/sxw', getSxw)
+.get('/lib', getLib)
+.get('/exam', getExam)
 // .get('*', function* (){
 // 	this.body = "mising";
 // })

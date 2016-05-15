@@ -11,7 +11,7 @@ function send(status, msg, content) {
 	}
 }
 
-exports.getStu = function * (next) {
+exports.getStu = function* (next) {
 	//var res = {};
 	var stuid = this.request.query.stuid;
 	if (!stuid) {
@@ -34,7 +34,7 @@ exports.getStu = function * (next) {
 };
 
 //双学位
-exports.getSxw = function * (next) {
+exports.getSxw = function* (next) {
 	var stuid = this.request.query.sid;
 	if (!stuid) {
 		return this.body = send(400, '缺少参数');
@@ -49,23 +49,23 @@ exports.getSxw = function * (next) {
 	this.body = send(500, 'error');
 }
 
-exports.getScore = function * (next) {
+exports.getScore = function* (next) {
 	var stuid = this.request.query.stuid;
-	var term = this.request.query.term||'2015.1';
+	var term = this.request.query.term || '2015.1';
 	if (!stuid) {
 		return this.body = send(400, '缺少参数');
 	}
 
 	var items = yield getScoreInfo(stuid, term);
-	console.log(items===null);
-	if(items === null) 	return this.body = send(404,'查询失败');
-	this.body = send(1,'查询成功', items);
+	console.log(items === null);
+	if (items === null) return this.body = send(404, '查询失败');
+	this.body = send(1, '查询成功', items);
 }
 
 function getScoreInfo(sid, term) {
-	return new Promise(function(resolve, reject) {
+	return new Promise(function (resolve, reject) {
 		superagent.get('http://jwc.ecjtu.jx.cn/mis_o/cj.php?sid=' + sid)
-			.end(function(err, sres) {
+			.end(function (err, sres) {
 				if (err) {
 					resolve(null);
 					return;
@@ -88,15 +88,15 @@ function getScoreInfo(sid, term) {
 					}
 				}
 				resolve(con);
-		});
+			});
 	})
 }
 
 function getCookie(sid) {
-	return new Promise(function(resolve, reject) {
+	return new Promise(function (resolve, reject) {
 		superagent.post('http://jwc.ecjtu.jx.cn/mis_o/login.php')
 			.send("user=jwc&pass=jwc&Submit=%CC%E1%BD%BB")
-			.end(function(err, sres) {
+			.end(function (err, sres) {
 				if (err) {
 					reject(err);
 				}
@@ -109,12 +109,12 @@ function getCookie(sid) {
 }
 
 function getSxwInfo(param) {
-	return new Promise(function(resolve, reject) {
+	return new Promise(function (resolve, reject) {
 		superagent.post('http://jwc.ecjtu.jx.cn/mis_o/tdquery.php')
 			.send("StuID=" + param.sid)
 			.charset('gb2312')
 			.set("Cookie", param.cookie)
-			.end(function(err, res) {
+			.end(function (err, res) {
 				if (err) reject(err);
 				//resolve(res.text);
 				var items = [];
@@ -158,7 +158,7 @@ function getSxwInfo(param) {
 	});
 }
 
-exports.getLib = function * (next) {
+exports.getLib = function* (next) {
 	var sid = this.request.query.stuid;
 	if (!sid) {
 		return this.body = send(400, '缺少参数');
@@ -171,7 +171,7 @@ exports.getLib = function * (next) {
 }
 
 function getLibInfo(sid) {
-	return new Promise(function(resolve, reject) {
+	return new Promise(function (resolve, reject) {
 		superagent
 			.post('http://portal.ecjtu.edu.cn/dcp/jy/jyH5Mobile.action')
 			.send({
@@ -189,7 +189,7 @@ function getLibInfo(sid) {
 				'render': 'json',
 				'clientType': 'json'
 			})
-			.end(function(err, res) {
+			.end(function (err, res) {
 				var data = JSON.parse(res.text).list;
 				var items = [];
 				for (var i in data) {
@@ -205,28 +205,68 @@ function getLibInfo(sid) {
 	});
 }
 
-exports.getEcard = function * (next) {
+exports.getEcard = function* (next) {
 	var sid = this.request.query.stuid;
     var epwd = this.request.query.epwd;
 	if (!sid || !epwd) {
 		return this.body = send(400, '缺少参数');
 	}
 
-	var data = yield getEcardInfo(sid,epwd);
+	var data = yield getEcardInfo(sid, epwd);
     data = JSON.parse(data);
 	if (data)
 		this.body = send(1, 'success', data);
 	else this.body = send(404, 'error', data);
 }
 
-function getEcardInfo(sid,epwd) {
-	return new Promise(function(resolve, reject) {
+function getEcardInfo(sid, epwd) {
+	return new Promise(function (resolve, reject) {
 		superagent
-			.get('http://api.ecjtu.org/func/jwc/ecard_info?'+'student_id='+sid+'&e_password='+epwd)
-			.end(function(err, res) {
+			.get('http://api.ecjtu.org/func/jwc/ecard_info?' + 'student_id=' + sid + '&e_password=' + epwd)
+			.end(function (err, res) {
 				var data = res.text;
-				
+
 				resolve(data);
 			});
 	});
+}
+
+exports.getExam = function* (next) {
+	var classid = this.request.query.classid;
+	if (!classid)
+		return this.body = send(400, '缺少参数');
+	var items = yield getExamInfo(classid);
+	if (items) {
+		return this.body = send(1, '查询成功', items);
+	}
+
+	this.body = send(500, 'error');
+}
+
+function getExamInfo(classid) {
+	return new Promise(function (resolve, reject) {
+		superagent
+			.get('http://jwc.ecjtu.jx.cn:8080/jwcmis/examarrange.jsp?classid=' + classid)
+			.charset('gb2312')
+			.end(function (err, res) {
+				if (err) reject(err);
+				var $ = cheerio.load(res.text);
+				var items = [];
+				var rows = $('table').last().find('tr');
+				for (var i = 0; i<rows.length; i++) {
+					var t = rows.eq(i).find('td');
+					items.push({
+						name: t.eq(1).text(),
+						week: t.eq(3).text(),
+						time: t.eq(4).text(),
+						room: t.eq(5).text(),
+						teacher1: t.eq(6).text(),
+						depart1: t.eq(7).text(),
+						teacher2: t.eq(8).text(),
+						depart2: t.eq(9).text(),
+					})
+				}
+				resolve(items);
+			})
+	})
 }
