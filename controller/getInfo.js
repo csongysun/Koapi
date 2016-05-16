@@ -240,7 +240,7 @@ exports.getExam = function* (next) {
 		return this.body = send(1, '查询成功', items);
 	}
 
-	this.body = send(500, 'error');
+	this.body = send(404, '暂无考试安排信息');
 }
 
 function getExamInfo(classid) {
@@ -252,6 +252,7 @@ function getExamInfo(classid) {
 				if (err) reject(err);
 				var $ = cheerio.load(res.text);
 				var items = [];
+				if($('table').length === 1) resolve();
 				var rows = $('table').last().find('tr');
 				for (var i = 0; i<rows.length; i++) {
 					var t = rows.eq(i).find('td');
